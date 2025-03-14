@@ -117,6 +117,19 @@ const eng = {
         owner: 'Owner',
         reviewer: 'Reviewer',
         title: 'Title',
+        analyzeWithAI: 'Analyze with AI',
+        ai: {
+            analyzing: 'Analyzing selected component...',
+            configureProvider: 'Configure AI Provider and API Key to start.',
+            configureButton: 'Configure AI Provider',
+            noThreats: 'No threats identified for this component. Try selecting another component.',
+            applyThreat: 'Apply this Threat',
+            applyAllThreats: 'Apply All Threats',
+            appliedSuccess: 'Threat "{title}" successfully applied!',
+            appliedAllSuccess: '{count} threats successfully applied!',
+            sessionKeyWarning: 'API key will only be stored for the current session',
+            error: 'Error during analysis. Please check the console for details.'
+        },
         diagram: {
             diagrams: 'Diagrams',
             addNewDiagram: 'Add a new diagram...',
@@ -258,6 +271,8 @@ const eng = {
         discardTitle: 'Discard Changes?',
         discardMessage: 'Are you sure you want to discard your changes?',
         edit: 'Edit',
+        error: 'Error',
+        success: 'Success',
         export: 'Export',
         exportAs: 'Export Model As',
         exportHtml: 'HTML Report',
@@ -277,10 +292,11 @@ const eng = {
         saveModel: 'Save Model',
         saveModelAs: 'Save Model As',
         search: 'Search',
-        next:'Next',
-        previous:'Previous'
+        next: 'Next',
+        previous: 'Previous'
     },
     threats: {
+        title: 'Threats',
         model: {
             cia: {
                 header: '--- CIA ---',

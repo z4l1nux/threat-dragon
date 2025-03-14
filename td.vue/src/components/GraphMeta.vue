@@ -1,74 +1,88 @@
 <template>
-    <b-row>
-        <b-col md="6">
-            <b-card :header="`${$t('threatmodel.properties.title')}`">
-                <b-card-body>
-                    <td-graph-properties />
-                </b-card-body>
-            </b-card>
-        </b-col>
-        <b-col md="6">
-            <b-card header-tag="header">
-                <template #header>
-                    {{ $t('threatmodel.threats') }}
-                    <b-btn
-                        :disabled="disableNewThreat"
-                        @click="newThreat()"
-                        v-if="!!cellRef"
-                        variant="primary"
-                        size="sm"
-                        class="float-right"
-                    >
-                        <font-awesome-icon icon="plus" class="mr-1"></font-awesome-icon>
-                        {{ $t('threats.newThreat') }}
-                    </b-btn>
-                </template>
-                <b-card-body>
-                    <b-card-text v-if="!!cellRef">
-                        <b-row>
-                            <b-col
-                                md="4"
-                                v-for="(threat, idx) in threats || []"
-                                :key="idx"
-                            >
-                                <td-graph-threats
-                                    :id="threat.id"
-                                    :status="threat.status"
-                                    :severity="threat.severity"
-                                    :description="threat.description"
-                                    :title="threat.title"
-                                    :type="threat.type"
-                                    :mitigation="threat.mitigation"
-                                    :modelType="threat.modelType"
-                                    :number=threat.number
-                                    @threatSelected="threatSelected" />
-                            </b-col>
-                        </b-row>
-                    </b-card-text>
-                    <b-card-text
-                        v-if="!cellRef || !cellRef.data">
-                        {{ $t('threats.emptyThreat') }}
-                    </b-card-text>
-                </b-card-body>
-            </b-card>
-            <a href="javascript:void(0)"
-                v-if="!disableNewThreat"
-                @click="AddThreatByType()"
-                class="new-threat-by-type m-2"
-            >
-                    <font-awesome-icon icon="plus"></font-awesome-icon>
-                    {{ $t('threats.newThreatByType') }}
-            </a>
-            <a href="javascript:void(0)"
-                v-if="!disableNewThreat"
-                @click="AddThreatByContext()"
-                class="new-threat-by-type m-2"
-            >
-                    <font-awesome-icon icon="plus"></font-awesome-icon>
-                    {{ $t('threats.newThreatByContext') }}
-            </a>
-        </b-col>
-    </b-row>
+    <div>
+        <b-row>
+            <b-col md="6">
+                <b-card :header="`${$t('threatmodel.properties.title')}`">
+                    <b-card-body>
+                        <td-graph-properties />
+                    </b-card-body>
+                </b-card>
+            </b-col>
+            <b-col md="6">
+                <b-card header-tag="header">
+                    <template #header>
+                        {{ $t('threatmodel.threats') }}
+                        <b-btn
+                            :disabled="disableNewThreat"
+                            @click="newThreat()"
+                            v-if="!!cellRef"
+                            variant="primary"
+                            size="sm"
+                            class="float-right"
+                        >
+                            <font-awesome-icon icon="plus" class="mr-1"></font-awesome-icon>
+                            {{ $t('threats.newThreat') }}
+                        </b-btn>
+                    </template>
+                    <b-card-body>
+                        <b-card-text v-if="!!cellRef">
+                            <b-row>
+                                <b-col
+                                    md="4"
+                                    v-for="(threat, idx) in threats || []"
+                                    :key="idx"
+                                >
+                                    <td-graph-threats
+                                        :id="threat.id"
+                                        :status="threat.status"
+                                        :severity="threat.severity"
+                                        :description="threat.description"
+                                        :title="threat.title"
+                                        :type="threat.type"
+                                        :mitigation="threat.mitigation"
+                                        :modelType="threat.modelType"
+                                        :number=threat.number
+                                        @threatSelected="threatSelected" />
+                                </b-col>
+                            </b-row>
+                        </b-card-text>
+                        <b-card-text
+                            v-if="!cellRef || !cellRef.data">
+                            {{ $t('threats.emptyThreat') }}
+                        </b-card-text>
+                    </b-card-body>
+                </b-card>
+                <a href="javascript:void(0)"
+                    v-if="!disableNewThreat"
+                    @click="AddThreatByType()"
+                    class="new-threat-by-type m-2"
+                >
+                        <font-awesome-icon icon="plus"></font-awesome-icon>
+                        {{ $t('threats.newThreatByType') }}
+                </a>
+                <a href="javascript:void(0)"
+                    v-if="!disableNewThreat"
+                    @click="AddThreatByContext()"
+                    class="new-threat-by-type m-2"
+                >
+                        <font-awesome-icon icon="plus"></font-awesome-icon>
+                        {{ $t('threats.newThreatByContext') }}
+                </a>
+            </b-col>
+        </b-row>
+        <b-row v-if="cellRef">
+            <b-col>
+                <b-button 
+                    variant="primary" 
+                    @click="startAIAnalysis"
+                    :disabled="!cellRef || isAnalyzing"
+                >
+                    <font-awesome-icon icon="robot" />
+                    {{ $t('threatmodel.analyzeWithAI') }}
+                </b-button>
+            </b-col>
+        </b-row>
+    </div>
 </template>
 
 <style lang="scss" scoped>
@@ -125,6 +139,11 @@ export default {
     async mounted() {
         this.init();
     },
+    data() {
+        return {
+            isAnalyzing: false
+        };
+    },
     methods: {
         init() {
             this.$store.dispatch(CELL_UNSELECTED);
@@ -149,6 +168,12 @@ export default {
         },
         AddThreatByContext(){
             this.$emit('threatSuggest','context');
+        },
+        startAIAnalysis() {
+            console.log('Botão de análise IA clicado', this.cellRef);
+            if (this.cellRef) {
+                this.$emit('aiAnalysis', this.cellRef);
+            }
         }
     },
 };

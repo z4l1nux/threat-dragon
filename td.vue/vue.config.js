@@ -49,7 +49,25 @@ console.log(`Running on ${hasTlsCredentials ? `HTTPS (Port ${port})` : `HTTP (Po
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? '/public' : '/',
     productionSourceMap: false,
-    devServer: devServerConfig,
+    devServer: {
+        ...devServerConfig,
+        proxy: process.env.VUE_APP_API_PROXY === 'true' ? {
+            '/api': {
+                target: `${serverApiProtocol}://localhost:${port}`,
+                secure: serverApiProtocol === 'https'
+            },
+            '/api/ai/analyze': {
+                target: 'https://api.anthropic.com/v1/messages',
+                changeOrigin: true,
+                pathRewrite: { '^/api/ai/analyze': '' },
+                onProxyReq: function(proxyReq, req, res) {
+                    proxyReq.setHeader('Content-Type', 'application/json');
+                    proxyReq.setHeader('x-api-key', process.env.VUE_APP_ANTHROPIC_API_KEY || '');
+                    proxyReq.setHeader('anthropic-version', '2023-06-01');
+                }
+            }
+        } : null
+    },
     lintOnSave: false,
     pluginOptions: {
         'style-resources-loader': {
